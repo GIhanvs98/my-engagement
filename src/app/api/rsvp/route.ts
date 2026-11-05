@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
+import { sendRsvpNotificationEmail } from "@/lib/emailService";
 
 export interface RSVPRecord {
   id: string;
@@ -134,6 +135,12 @@ export async function POST(request: Request) {
     };
 
     saveRSVP(newRecord);
+
+    try {
+      await sendRsvpNotificationEmail(newRecord);
+    } catch (emailErr) {
+      console.error("[Resend] Failed to send notification email:", emailErr);
+    }
 
     return NextResponse.json(
       {
