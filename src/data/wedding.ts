@@ -25,7 +25,7 @@ export const couple = {
 };
 
 export const wedding = {
-  date: "2026-11-20T16:00:00+05:30", // ISO with Sri Lanka offset, used by countdown
+  date: "2026-11-20T08:00:00+05:30", // ISO with Sri Lanka offset, used by countdown
   displayDate: "20 November 2026",
   dayOfWeek: "Friday",
   welcomeMessage:
@@ -38,14 +38,61 @@ export const wedding = {
 
 export const heroImage = "/wedding/hero/couple.png";
 
-// Opening "film" shown after the guest taps Open Invitation.
-// Set introVideo to a short muted MP4 in /public (e.g. "/video/intro.mp4") to play your own film;
-// otherwise the intro image plays with a slow cinematic zoom, names and falling petals.
-export const intro = {
-  image:
-    "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1600&auto=format&fit=crop",
+export interface IntroScene {
+  id: string;
+  image: string;
+  tagline: string;
+  title: string;
+  caption: string;
+  accent?: string;
+}
+
+// Cinematic Opening Film with multi-scene story montage
+export const intro: {
+  scenes: IntroScene[];
+  sceneDuration: number;
+  image: string;
+  video: string;
+  seconds: number;
+} = {
+  scenes: [
+    {
+      id: "proposal",
+      image: "/images/couple/Joyful Outdoor Proposal Moment.png",
+      tagline: "The First Yes",
+      title: "Where Forever Began",
+      caption: "A question asked, a lifetime promised under the open sky.",
+      accent: "February 2025",
+    },
+    {
+      id: "romance",
+      image: "/images/couple/Joyful Couple with a Colorful Bouquet.png",
+      tagline: "Two Hearts, One Journey",
+      title: "Gihan & Onela",
+      caption: "Two souls finding laughter, warmth and endless home in each other.",
+      accent: "In Love",
+    },
+    {
+      id: "invitation",
+      image: "/images/couple/img_1.png",
+      tagline: "Together With Our Beloved Families",
+      title: "Cordially Invite You",
+      caption: "To celebrate love, laughter, and a beautiful beginning.",
+      accent: "Our Engagement Day",
+    },
+    {
+      id: "venue",
+      image: "/images/venue/rockhill-reception-hall.jpg",
+      tagline: "Save The Date",
+      title: "Friday, 20 November 2026",
+      caption: "Rockhill Reception Hall & Caterers, Homagama • 10:00 AM",
+      accent: "10:00 AM",
+    },
+  ],
+  sceneDuration: 4200,
+  image: "/images/couple/Joyful Outdoor Proposal Moment.png",
   video: "",
-  seconds: 9,
+  seconds: 16,
 };
 
 export const music = {
@@ -88,54 +135,37 @@ export const story = [
 
 export const events = [
   {
-    id: "poruwa",
-    name: "Poruwa Ceremony",
+    id: "registration",
+    name: "Registration Ceremony",
     date: "Friday, 20 November 2026",
-    time: "4:00 PM – 5:30 PM",
-    venue: "Rockhill Reception Hall",
-    address: "No. 1/3, Sri Seelalankara Mawatha, Mullegama, Habarakada, Homagama, Sri Lanka",
-    description: "The traditional Sinhala nuptial ceremony blessed with sacred chants, Jayamangala Gatha, and cultural customs.",
-    mapUrl: "https://share.google/sy6LpQQDbQoQCdhYx",
+    time: "8:00 AM – 8:30 AM",
+    venue: "Registration Office",
+    address: "Agulana, Sri Lanka",
+    description: "The official registration ceremony blessed in the presence of our beloved family.",
+    mapUrl: "https://www.google.com/maps/search/?api=1&query=Registration+Office+Angulana+Sri+Lanka",
     calendar: {
-      title: "Gihan & Onela's Poruwa Ceremony",
-      start: "20261120T160000",
-      end: "20261120T173000",
-      location: "Rockhill Reception Hall, Homagama, Sri Lanka",
-      description: "Join us as we ascend the Poruwa and exchange our sacred vows.",
+      title: "Gihan & Onela's Registration Ceremony",
+      start: "20261120T080000",
+      end: "20261120T083000",
+      location: "Registration Office, Agulana, Sri Lanka",
+      description: "Official registration ceremony.",
     },
   },
   {
     id: "reception",
     name: "Reception & Celebration",
     date: "Friday, 20 November 2026",
-    time: "7:00 PM – 10:00 PM",
+    time: "10:00 AM – 03:00 PM",
     venue: "Rockhill Reception Hall",
     address: "No. 1/3, Sri Seelalankara Mawatha, Mullegama, Habarakada, Homagama, Sri Lanka",
-    description: "An evening of fine dining, heartfelt toasts, live music, and timeless memories.",
+    description: "Grand entrance, traditional blessings, ring exchange, lunch reception, and joyful celebration.",
     mapUrl: "https://share.google/sy6LpQQDbQoQCdhYx",
     calendar: {
-      title: "Gihan & Onela's Engagement Reception",
-      start: "20261120T190000",
-      end: "20261120T220000",
+      title: "Gihan & Onela's Engagement Reception & Celebration",
+      start: "20261120T100000",
+      end: "20261120T150000",
       location: "Rockhill Reception Hall, Homagama, Sri Lanka",
-      description: "Cocktails, dinner, and celebration into the night.",
-    },
-  },
-  {
-    id: "afterparty",
-    name: "Midnight After Party",
-    date: "Friday, 20 November 2026",
-    time: "10:30 PM onwards",
-    venue: "Rockhill Courtyard & Lounge",
-    address: "No. 1/3, Sri Seelalankara Mawatha, Mullegama, Habarakada, Homagama, Sri Lanka",
-    description: "Let loose on the dance floor under the stars with our close circle.",
-    mapUrl: "https://share.google/sy6LpQQDbQoQCdhYx",
-    calendar: {
-      title: "Gihan & Onela's After Party",
-      start: "20261120T223000",
-      end: "20261121T010000",
-      location: "Rockhill Reception Hall, Homagama, Sri Lanka",
-      description: "Dancing and celebration into the late night.",
+      description: "Celebrate our engagement with blessings, lunch reception, and joyful celebration.",
     },
   },
 ];
