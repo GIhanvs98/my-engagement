@@ -487,3 +487,42 @@ textarea:focus-visible {
   transform: rotateY(112deg) scale(0.98);
   opacity: 0;
 }
+
+/* ============================================================ */
+/* CINEMATIC FILM KEYFRAMES & WIDESCREEN STYLING                */
+/* ============================================================ */
+
+@keyframes cinematic-zoom-1 {
+  0% { transform: scale(1.04) translate3d(0, 0, 0); }
+  100% { transform: scale(1.18) translate3d(-1.5%, -1%, 0); }
+}
+@keyframes cinematic-zoom-2 {
+  0% { transform: scale(1.18) translate3d(-1%, 1%, 0); }
+  100% { transform: scale(1.05) translate3d(1%, -1%, 0); }
+}
+@keyframes cinematic-zoom-3 {
+  0% { transform: scale(1.06) translate3d(1%, -0.5%, 0); }
+  100% { transform: scale(1.2) translate3d(-1%, 1%, 0); }
+}
+@keyframes cinematic-zoom-4 {
+  0% { transform: scale(1.15) translate3d(-1%, 0, 0); }
+  100% { transform: scale(1.05) translate3d(1%, 0, 0); }
+}
+
+.anim-cinematic-1 { animation: cinematic-zoom-1 5.5s cubic-bezier(0.25, 1, 0.5, 1) forwards; will-change: transform; }
+.anim-cinematic-2 { animation: cinematic-zoom-2 5.5s cubic-bezier(0.25, 1, 0.5, 1) forwards; will-change: transform; }
+.anim-cinematic-3 { animation: cinematic-zoom-3 5.5s cubic-bezier(0.25, 1, 0.5, 1) forwards; will-change: transform; }
+.anim-cinematic-4 { animation: cinematic-zoom-4 5.5s cubic-bezier(0.25, 1, 0.5, 1) forwards; will-change: transform; }
+
+@keyframes wax-seal-glow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(180, 154, 98, 0.5), 0 10px 25px -5px rgba(100, 44, 44, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 0 14px rgba(180, 154, 98, 0), 0 14px 35px -5px rgba(100, 44, 44, 0.45);
+  }
+}
+.wax-seal-glow {
+  animation: wax-seal-glow 2.8s ease-in-out infinite;
+}
+

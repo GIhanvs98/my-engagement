@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { couple, wedding, intro, music } from "@/data/wedding";
 import Mandala from "./Mandala";
 import PetalBurst from "./PetalBurst";
@@ -25,6 +25,21 @@ export default function IntroGate({
   const [stage, setStage] = useState<GateState>("splash");
   const [guest, setGuest] = useState("");
   const [isPlayingMusic, setIsPlayingMusic] = useState(false);
+  const [currentSceneIndex, setCurrentSceneIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+
+  const scenes = intro.scenes || [
+    {
+      id: "proposal",
+      image: intro.image || couple.couplePhoto,
+      tagline: "The First Yes",
+      title: "Where Forever Began",
+      caption: "A question asked, a lifetime promised.",
+      accent: "February 2025",
+    },
+  ];
+
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     onPhaseChange?.(stage);
@@ -59,40 +74,58 @@ export default function IntroGate({
   // Support replaying intro from anywhere in the app
   useEffect(() => {
     const onReplay = () => {
+      setCurrentSceneIndex(0);
+      setIsPaused(false);
       setStage("splash");
     };
     window.addEventListener("wedding:replay", onReplay);
     return () => window.removeEventListener("wedding:replay", onReplay);
   }, []);
 
-  // Handle film duration and reveal transition
+  // Handle stage transitions
+  const startReveal = useCallback(() => {
+    setStage("reveal");
+    window.scrollTo({ top: 0 });
+    const target = document.getElementById("invitation-main");
+    if (target) {
+      target.scrollIntoView({ behavior: "instant", block: "start" });
+    }
+    setTimeout(() => {
+      setStage("gone");
+      onOpenComplete?.();
+    }, 850);
+  }, [onOpenComplete]);
+
+  // Handle opening 3D animation
   useEffect(() => {
     if (stage === "opening-3d") {
-      const t = window.setTimeout(() => {
+      const t = setTimeout(() => {
         setStage("playing");
-      }, 950);
-      return () => window.clearTimeout(t);
+      }, 1000);
+      return () => clearTimeout(t);
     }
-    if (stage === "playing") {
-      const durationSeconds = intro.video ? 20 : intro.seconds || 9;
-      const t = window.setTimeout(() => setStage("reveal"), durationSeconds * 1000);
-      return () => window.clearTimeout(t);
-    }
-    if (stage === "reveal") {
-      window.scrollTo({ top: 0 });
-      const target = document.getElementById("invitation-main");
-      if (target) {
-        target.scrollIntoView({ behavior: "instant", block: "start" });
-      }
-      const t = window.setTimeout(() => {
-        setStage("gone");
-        onOpenComplete?.();
-      }, 950);
-      return () => window.clearTimeout(t);
-    }
-  }, [stage, onOpenComplete]);
+  }, [stage]);
 
-  // Handle "Open Invitation" tap with 3D Door Swing
+  // Handle cinematic scenes timer
+  useEffect(() => {
+    if (stage !== "playing" || isPaused) return;
+
+    const duration = intro.sceneDuration || 4200;
+
+    timerRef.current = setTimeout(() => {
+      if (currentSceneIndex < scenes.length - 1) {
+        setCurrentSceneIndex((prev) => prev + 1);
+      } else {
+        startReveal();
+      }
+    }, duration);
+
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, [stage, currentSceneIndex, isPaused, scenes.length, startReveal]);
+
+  // Handle "Open Invitation" tap
   const handleOpenInvitation = () => {
     weddingAudio.play(music.src);
     window.dispatchEvent(new CustomEvent("wedding:open"));
@@ -103,11 +136,25 @@ export default function IntroGate({
   const handleSkip = () => {
     weddingAudio.play(music.src);
     window.dispatchEvent(new CustomEvent("wedding:open"));
-    setStage("reveal");
+    startReveal();
   };
 
   const toggleMusic = () => {
     weddingAudio.toggle(music.src);
+  };
+
+  const handleNextScene = () => {
+    if (currentSceneIndex < scenes.length - 1) {
+      setCurrentSceneIndex((prev) => prev + 1);
+    } else {
+      startReveal();
+    }
+  };
+
+  const handlePrevScene = () => {
+    if (currentSceneIndex > 0) {
+      setCurrentSceneIndex((prev) => prev - 1);
+    }
   };
 
   if (stage === "gone") return null;
@@ -118,119 +165,186 @@ export default function IntroGate({
   return (
     <div
       className={cn(
-        "inset-0 overflow-hidden transition-all duration-700 select-none bg-[#F5EDDC] perspective-1200 preserve-3d",
+        "inset-0 overflow-hidden transition-all duration-700 select-none bg-[#0D0806] perspective-1200 preserve-3d",
         isInsidePhone ? "absolute z-50" : "fixed z-[100]",
         stage === "reveal" && "opacity-0 pointer-events-none scale-[0.98]"
       )}
       role="dialog"
       aria-modal="true"
-      aria-label="Engagement Invitation Gate"
+      aria-label="Cinematic Engagement Invitation"
     >
       {/* ============================================================ */}
-      {/* BACKGROUND FILM LAYER (Underneath 3D Doors)                   */}
+      {/* CINEMATIC WIDESCREEN FILM LAYER (Underneath 3D Doors)          */}
       {/* ============================================================ */}
       {isFilmVisible && (
-        <div className="absolute inset-0 bg-[#160A02] animate-[fadeIn_0.5s_ease] z-10">
-          {intro.video ? (
-            <video
-              src={intro.video}
-              autoPlay
-              muted
-              playsInline
-              preload="auto"
-              className="absolute inset-0 h-full w-full object-cover"
-              onEnded={() => setStage("reveal")}
-            />
-          ) : (
-            <div className="absolute inset-0 kenburns">
-              <Image
-                src={intro.image || couple.couplePhoto}
-                alt=""
-                fill
-                priority
-                sizes="100vw"
-                className="object-cover"
-              />
+        <div className="absolute inset-0 bg-[#0A0605] z-10 flex flex-col justify-between overflow-hidden">
+          {/* Top Letterbox Cinema Bar */}
+          <div className="relative z-30 w-full bg-black/85 backdrop-blur-md px-6 py-4 flex items-center justify-between border-b border-champagne/15">
+            {/* Story Reel Progress Segments */}
+            <div className="flex items-center gap-1.5 flex-1 max-w-xs sm:max-w-md mr-4">
+              {scenes.map((scene, idx) => (
+                <div
+                  key={scene.id}
+                  className="h-1 flex-1 rounded-full bg-white/20 overflow-hidden"
+                >
+                  <div
+                    className={cn(
+                      "h-full bg-champagne transition-all duration-300",
+                      idx < currentSceneIndex && "w-full",
+                      idx === currentSceneIndex && "w-full animate-[film-bar-progress_4.2s_linear]",
+                      idx > currentSceneIndex && "w-0"
+                    )}
+                  />
+                </div>
+              ))}
             </div>
-          )}
 
-          {/* Cinematic dark gradient vignette */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/20 to-black/75" />
+            {/* Top Right Controls (Mute & Skip) */}
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={toggleMusic}
+                aria-label={isPlayingMusic ? "Mute music" : "Play music"}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 border border-champagne/30 text-ivory text-[11px] font-body tracking-wider uppercase backdrop-blur transition-all cursor-pointer"
+              >
+                {isPlayingMusic ? (
+                  <span className="flex items-center gap-0.5 h-3">
+                    <span className="sound-bar" style={{ animationDelay: "0ms" }} />
+                    <span className="sound-bar" style={{ animationDelay: "150ms" }} />
+                    <span className="sound-bar" style={{ animationDelay: "300ms" }} />
+                  </span>
+                ) : (
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                    <line x1="23" y1="9" x2="17" y2="15" />
+                    <line x1="17" y1="9" x2="23" y2="15" />
+                  </svg>
+                )}
+                <span className="hidden sm:inline">{isPlayingMusic ? "Music On" : "Muted"}</span>
+              </button>
 
-          {/* Sweeping large flower petals burst in 3D */}
-          <PetalBurst count={36} />
-
-          {/* Overlaid Engagement Title with soft glowing text shadow */}
-          <div
-            className="pointer-events-none absolute inset-0 z-20 flex flex-col items-center justify-center px-8 text-center text-white"
-            style={{
-              textShadow: "0 2px 22px rgba(0,0,0,0.7), 0 0 10px rgba(0,0,0,0.5)",
-            }}
-          >
-            <span
-              className="text-[0.68rem] sm:text-[0.82rem] uppercase tracking-[0.42em] text-white/90"
-              style={{
-                fontFamily: "var(--font-body), sans-serif",
-                fontWeight: 600,
-              }}
-            >
-              The Engagement Of
-            </span>
-
-            {/* Diamond Separator Line */}
-            <span aria-hidden="true" className="my-3 flex items-center gap-2 text-white/85">
-              <span className="h-px w-8 bg-gradient-to-r from-transparent to-white/85" />
-              <span className="h-1.5 w-1.5 rotate-45 bg-white/90" />
-              <span className="h-px w-8 bg-gradient-to-r from-white/85 to-transparent" />
-            </span>
-
-            <p
-              className="leading-[1.05] mt-1 mb-2"
-              style={{
-                fontFamily: "var(--font-display), serif",
-                fontStyle: "italic",
-                fontWeight: 500,
-                color: "#FFFFFF",
-                fontSize: "clamp(2.4rem, 8.5vw, 4.2rem)",
-                letterSpacing: "-0.005em",
-              }}
-            >
-              {couple.groomFirstName}{" "}
-              <span className="font-script not-italic text-champagne-light mx-1">&amp;</span>{" "}
-              {couple.brideFirstName}
-            </p>
-
-            <span
-              className="mt-3 text-[0.68rem] sm:text-[0.8rem] uppercase tracking-[0.34em] text-white/85"
-              style={{
-                fontFamily: "var(--font-body), sans-serif",
-              }}
-            >
-              {wedding.displayDate}
-            </span>
+              <button
+                type="button"
+                onClick={handleSkip}
+                className="inline-flex items-center gap-1.5 rounded-full bg-maroon/85 hover:bg-maroon px-4 py-1.5 text-[11px] uppercase tracking-[0.2em] font-body font-medium text-ivory border border-champagne/40 backdrop-blur transition-all hover:scale-105 cursor-pointer shadow-md"
+              >
+                <span>Enter</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <polyline points="9 18 15 12 9 6" />
+                </svg>
+              </button>
+            </div>
           </div>
 
-          {/* "Skip" Button (bottom right pill) */}
-          <button
-            type="button"
-            onClick={handleSkip}
-            aria-label="Skip to invitation"
-            className="absolute bottom-5 right-5 z-30 inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-[0.66rem] uppercase tracking-[0.26em] backdrop-blur transition-all duration-200 hover:bg-black/60 sm:bottom-7 sm:right-7 cursor-pointer"
-            style={{
-              fontFamily: "var(--font-body), sans-serif",
-              fontWeight: 600,
-              background: "rgba(0, 0, 0, 0.45)",
-              color: "#FFFDF8",
-              border: "1px solid rgba(255, 253, 248, 0.4)",
-            }}
-          >
-            Skip
-          </button>
+          {/* Film Viewport & Active Slide */}
+          <div className="relative flex-1 w-full overflow-hidden">
+            {scenes.map((scene, idx) => {
+              const isActive = idx === currentSceneIndex;
+              const animClass = `anim-cinematic-${(idx % 4) + 1}`;
+
+              return (
+                <div
+                  key={scene.id}
+                  className={cn(
+                    "absolute inset-0 transition-opacity duration-1000 ease-in-out",
+                    isActive ? "opacity-100 z-10 pointer-events-auto" : "opacity-0 z-0 pointer-events-none"
+                  )}
+                >
+                  {/* Photo with Ken Burns Motion */}
+                  <div className={cn("absolute inset-0", isActive && animClass)}>
+                    <Image
+                      src={scene.image}
+                      alt={scene.title}
+                      fill
+                      priority={idx <= 1}
+                      sizes="100vw"
+                      className="object-cover object-center"
+                    />
+                  </div>
+
+                  {/* Cinematic Dark Vignette & Color Grading Overlays */}
+                  <div className="absolute inset-0 bg-radial-[circle_at_center,transparent_30%,rgba(0,0,0,0.85)_100%]" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-black/60" />
+
+                  {/* Golden Stardust Light Leak (top-right ambient bloom) */}
+                  <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-champagne/15 blur-3xl pointer-events-none" />
+
+                  {/* Floating Flower Petals */}
+                  <PetalBurst count={24} />
+
+                  {/* Centered Cinematic Title & Text Overlay */}
+                  <div className="absolute inset-0 flex flex-col items-center justify-end pb-16 sm:pb-20 px-6 sm:px-12 text-center z-20 pointer-events-none">
+                    <span className="font-body text-xs sm:text-sm uppercase tracking-[0.45em] text-champagne-light/95 drop-shadow-md">
+                      {scene.tagline}
+                    </span>
+
+                    {/* Diamond Separator Line */}
+                    <div className="my-3 flex items-center justify-center gap-3">
+                      <span className="h-px w-10 sm:w-16 bg-gradient-to-r from-transparent to-champagne/80" />
+                      <span className="h-1.5 w-1.5 rotate-45 bg-champagne" />
+                      <span className="h-px w-10 sm:w-16 bg-gradient-to-r from-champagne/80 to-transparent" />
+                    </div>
+
+                    <h2
+                      className="font-display italic text-3xl sm:text-5xl md:text-6xl text-ivory tracking-wide leading-tight max-w-3xl"
+                      style={{ textShadow: "0 4px 30px rgba(0,0,0,0.85), 0 0 15px rgba(0,0,0,0.6)" }}
+                    >
+                      {scene.title}
+                    </h2>
+
+                    <p className="font-body text-xs sm:text-sm text-ivory/80 mt-2.5 max-w-md leading-relaxed drop-shadow-sm">
+                      {scene.caption}
+                    </p>
+
+                    {scene.accent && (
+                      <span className="mt-4 inline-block font-script text-xl sm:text-2xl text-champagne-light drop-shadow">
+                        {scene.accent}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+
+            {/* Click Navigation Overlays (Left for prev, Right for next) */}
+            <div
+              onClick={handlePrevScene}
+              className="absolute inset-y-0 left-0 w-1/4 z-20 cursor-w-resize"
+              title="Previous chapter"
+            />
+            <div
+              onClick={handleNextScene}
+              className="absolute inset-y-0 right-0 w-3/4 z-20 cursor-e-resize"
+              title="Next chapter"
+            />
+          </div>
+
+          {/* Bottom Letterbox Cinema Bar with Scene Indicators & Pause/Resume */}
+          <div className="relative z-30 w-full bg-black/85 backdrop-blur-md px-6 py-3 flex items-center justify-between border-t border-champagne/15 text-ivory/60 text-[10px] font-body tracking-[0.25em] uppercase">
+            <div className="flex items-center gap-2">
+              <span className="inline-block w-2 h-2 rounded-full bg-champagne animate-pulse" />
+              <span>
+                Chapter {currentSceneIndex + 1} of {scenes.length}
+              </span>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setIsPaused((p) => !p)}
+              className="hover:text-ivory transition-colors cursor-pointer"
+            >
+              {isPaused ? "▶ Resume" : "❚❚ Pause"}
+            </button>
+
+            <span className="hidden sm:inline text-champagne-light/70">
+              Gihan &amp; Onela &bull; Engagement 2026
+            </span>
+          </div>
         </div>
       )}
 
       {/* ============================================================ */}
-      {/* 3D ROYAL BIFOLD GATE DOORS (Splits open in 3D perspective)    */}
+      {/* 3D ROYAL ENVELOPE / BIFOLD DOORS (Cover Gate Layer)           */}
       {/* ============================================================ */}
       {isDoorsVisible && (
         <div
@@ -241,14 +355,14 @@ export default function IntroGate({
         >
           {/* LEFT 3D DOOR */}
           <div
-            className="gate-door-3d-left absolute inset-y-0 left-0 w-1/2 overflow-hidden bg-[#F5EDDC] border-r border-[#D2B97A]/50"
+            className="gate-door-3d-left absolute inset-y-0 left-0 w-1/2 overflow-hidden bg-[#F6EEDF] border-r border-[#D2B97A]/50"
             style={{
               backgroundImage:
-                "linear-gradient(rgba(245, 237, 220, 0.5), rgba(245, 237, 220, 0.5)), radial-gradient(ellipse at center, #fffdf8 0%, #f4ead6 100%)",
+                "linear-gradient(rgba(246, 238, 223, 0.7), rgba(246, 238, 223, 0.7)), radial-gradient(ellipse at center, #FFFDF8 0%, #EDE1CB 100%)",
             }}
           >
             {/* Left Mandala Half */}
-            <div className="pointer-events-none absolute left-[100%] -top-[14rem] sm:-top-[21rem] w-[28rem] sm:w-[42rem] -translate-x-1/2 select-none opacity-55">
+            <div className="pointer-events-none absolute left-[100%] -top-[14rem] sm:-top-[21rem] w-[28rem] sm:w-[42rem] -translate-x-1/2 select-none opacity-50">
               <Mandala immediate className="w-full h-auto drop-shadow-[0_6px_14px_rgba(142,116,39,0.18)]" />
             </div>
 
@@ -273,25 +387,25 @@ export default function IntroGate({
               ))}
             </div>
 
-            {/* Left Perahara Artwork Half */}
-            <div className="absolute bottom-0 left-0 w-[200%] pb-1 pointer-events-none">
+            {/* Left Perahara Artwork */}
+            <div className="absolute bottom-0 left-0 w-[200%] pb-1 pointer-events-none opacity-85">
               <PeraharaProcession className="w-full" />
             </div>
 
-            {/* Subtle inner gold frame border */}
-            <div className="pointer-events-none absolute inset-2 sm:inset-3 border-l border-y border-[#B89A47]/30 rounded-l-2xl" />
+            {/* Inner Gold Frame Border */}
+            <div className="pointer-events-none absolute inset-3 sm:inset-4 border-l border-y border-[#B89A47]/35 rounded-l-2xl" />
           </div>
 
           {/* RIGHT 3D DOOR */}
           <div
-            className="gate-door-3d-right absolute inset-y-0 right-0 w-1/2 overflow-hidden bg-[#F5EDDC] border-l border-[#D2B97A]/50"
+            className="gate-door-3d-right absolute inset-y-0 right-0 w-1/2 overflow-hidden bg-[#F6EEDF] border-l border-[#D2B97A]/50"
             style={{
               backgroundImage:
-                "linear-gradient(rgba(245, 237, 220, 0.5), rgba(245, 237, 220, 0.5)), radial-gradient(ellipse at center, #fffdf8 0%, #f4ead6 100%)",
+                "linear-gradient(rgba(246, 238, 223, 0.7), rgba(246, 238, 223, 0.7)), radial-gradient(ellipse at center, #FFFDF8 0%, #EDE1CB 100%)",
             }}
           >
             {/* Right Mandala Half */}
-            <div className="pointer-events-none absolute right-[100%] -top-[14rem] sm:-top-[21rem] w-[28rem] sm:w-[42rem] translate-x-1/2 select-none opacity-55">
+            <div className="pointer-events-none absolute right-[100%] -top-[14rem] sm:-top-[21rem] w-[28rem] sm:w-[42rem] translate-x-1/2 select-none opacity-50">
               <Mandala immediate className="w-full h-auto drop-shadow-[0_6px_14px_rgba(142,116,39,0.18)]" />
             </div>
 
@@ -316,21 +430,20 @@ export default function IntroGate({
               ))}
             </div>
 
-            {/* Right Perahara Artwork Half */}
-            <div className="absolute bottom-0 right-0 w-[200%] pb-1 pointer-events-none">
+            {/* Right Perahara Artwork */}
+            <div className="absolute bottom-0 right-0 w-[200%] pb-1 pointer-events-none opacity-85">
               <PeraharaProcession className="w-full" />
             </div>
 
-            {/* Subtle inner gold frame border */}
-            <div className="pointer-events-none absolute inset-2 sm:inset-3 border-r border-y border-[#B89A47]/30 rounded-r-2xl" />
+            {/* Inner Gold Frame Border */}
+            <div className="pointer-events-none absolute inset-3 sm:inset-4 border-r border-y border-[#B89A47]/35 rounded-r-2xl" />
           </div>
 
-          {/* Top Right Music Toggle Button */}
+          {/* Sound Toggle Button (Top Right of Cover) */}
           <button
             type="button"
             onClick={toggleMusic}
             aria-label={isPlayingMusic ? "Turn music off" : "Turn music on"}
-            title={isPlayingMusic ? "Turn music off" : "Turn music on"}
             className={cn(
               "absolute right-4 top-4 z-40 grid h-11 w-11 place-items-center rounded-full transition-transform duration-200 hover:-translate-y-0.5 active:scale-90 sm:right-6 sm:top-6 cursor-pointer",
               stage === "opening-3d" && "opacity-0 pointer-events-none"
@@ -346,16 +459,7 @@ export default function IntroGate({
           >
             {isPlayingMusic ? (
               <span className="relative flex items-center justify-center">
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
                   <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
                   <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
                   <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
@@ -363,16 +467,7 @@ export default function IntroGate({
                 <span className="ring-pulse absolute inset-[-8px] rounded-full border border-champagne-light/55" />
               </span>
             ) : (
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
                 <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
                 <line x1="23" y1="9" x2="17" y2="15" />
                 <line x1="17" y1="9" x2="23" y2="15" />
@@ -380,27 +475,27 @@ export default function IntroGate({
             )}
           </button>
 
-          {/* Center Card Content Overlay (Fades out when 3D doors swing open) */}
+          {/* Center Card & 3D Wax Seal (Splits open during opening-3d) */}
           <div
             className={cn(
               "absolute inset-0 z-30 flex flex-col items-center justify-center p-6 sm:p-8 text-center transition-all duration-300",
               stage === "opening-3d" ? "opacity-0 scale-90 pointer-events-none" : "opacity-100"
             )}
           >
-            {/* "The Engagement Of" Label */}
+            {/* Top Subtitle */}
             <span
-              className="text-[0.66rem] uppercase tracking-[0.4em]"
+              className="text-[0.66rem] uppercase tracking-[0.42em]"
               style={{
                 fontFamily: "var(--font-body), sans-serif",
                 color: "#8E7427",
                 fontWeight: 600,
               }}
             >
-              The Engagement Of
+              The Engagement Celebration Of
             </span>
 
             {/* Diamond Gradient Separator Line */}
-            <div className="mt-4 mb-2 flex items-center justify-center">
+            <div className="mt-3.5 mb-2 flex items-center justify-center">
               <span className="inline-flex items-center justify-center gap-2.5 w-[140px]" aria-hidden="true">
                 <span className="h-px flex-1 bg-gradient-to-r from-transparent to-[#D2B97A]" />
                 <span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-[#B89A47]" />
@@ -409,24 +504,24 @@ export default function IntroGate({
             </div>
 
             {/* Couple Names */}
-            <p
+            <h1
               className="leading-[1.1] my-2"
               style={{
                 fontFamily: "var(--font-display), serif",
                 fontStyle: "italic",
                 fontWeight: 500,
                 color: "#7A1F1A",
-                fontSize: "clamp(2.1rem, 7.5vw, 3.4rem)",
+                fontSize: "clamp(2.3rem, 8vw, 3.8rem)",
               }}
             >
               <span>{couple.groomFirstName}</span>
               <span className="font-script not-italic mx-2 text-[#8E7427] font-normal">&amp;</span>
               <span>{couple.brideFirstName}</span>
-            </p>
+            </h1>
 
-            {/* Wedding Date */}
+            {/* Date & Location */}
             <p
-              className="mt-2 text-[0.88rem]"
+              className="mt-1 text-[0.88rem] tracking-wide"
               style={{
                 fontFamily: "var(--font-body), sans-serif",
                 color: "#473C1F",
@@ -435,41 +530,8 @@ export default function IntroGate({
               {wedding.dayOfWeek}, {wedding.displayDate}
             </p>
 
-            {/* "Open Invitation" Button with 3D tactile hover */}
-            <button
-              type="button"
-              onClick={handleOpenInvitation}
-              tabIndex={0}
-              className="mt-7 inline-flex items-center gap-2 rounded-full px-7 py-3 text-[0.66rem] uppercase tracking-[0.26em] transition-all duration-300 hover:-translate-y-1 hover:shadow-lg active:scale-95 cursor-pointer card-3d"
-              style={{
-                fontFamily: "var(--font-body), sans-serif",
-                fontWeight: 700,
-                background: "rgba(255, 253, 248, 0.85)",
-                color: "#5C140F",
-                border: "1.5px solid #7A1F1A",
-                boxShadow: "0 6px 20px -6px rgba(122, 31, 26, 0.25)",
-              }}
-            >
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="rotate-180 text-[#7A1F1A]"
-                aria-hidden="true"
-              >
-                <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z" />
-                <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12" />
-              </svg>
-              Open Invitation
-            </button>
-
-            {/* Personalized Guest Greeting */}
-            <div className="mt-7 w-full max-w-[20rem] px-3">
+            {/* Personalized Guest Badge */}
+            <div className="mt-6 w-full max-w-[22rem] px-4 py-2.5 rounded-xl bg-champagne/15 border border-champagne/40 backdrop-blur-xs">
               <p
                 className="text-[0.62rem] uppercase tracking-[0.34em]"
                 style={{
@@ -478,22 +540,46 @@ export default function IntroGate({
                   fontWeight: 600,
                 }}
               >
-                Dear
+                Cordially Inviting
               </p>
               <p
-                className="mt-1"
+                className="mt-0.5 text-base sm:text-lg font-bold tracking-wider uppercase text-maroon font-display"
+              >
+                {guest || "Our Cherished Guest"}
+              </p>
+            </div>
+
+            {/* 3D ROYAL WAX SEAL BUTTON */}
+            <div className="mt-8 relative flex flex-col items-center">
+              <button
+                type="button"
+                onClick={handleOpenInvitation}
+                tabIndex={0}
+                aria-label="Open Engagement Invitation"
+                className="relative group w-24 h-24 sm:w-28 sm:h-28 rounded-full flex flex-col items-center justify-center cursor-pointer transition-transform duration-300 hover:scale-105 active:scale-95 wax-seal-glow"
                 style={{
-                  fontFamily: "var(--font-body), sans-serif",
-                  color: "#2A2112",
-                  fontWeight: 700,
-                  lineHeight: 1.35,
-                  textTransform: "uppercase",
-                  fontSize: "1.05rem",
-                  letterSpacing: "0.18em",
+                  background: "radial-gradient(circle at 35% 35%, #8A2520 0%, #641915 60%, #420C0A 100%)",
+                  border: "3px solid #D4B26F",
+                  boxShadow:
+                    "0 15px 35px -8px rgba(66, 12, 10, 0.7), inset 0 2px 4px rgba(255, 255, 255, 0.3), inset 0 -4px 8px rgba(0, 0, 0, 0.5)",
                 }}
               >
-                {guest || "Beloved Guest"}
-              </p>
+                {/* Embossed Wax Seal Ring */}
+                <span className="absolute inset-2 rounded-full border border-dashed border-[#D4B26F]/60 pointer-events-none" />
+
+                {/* Monogram G & O */}
+                <span className="font-display italic text-2xl sm:text-3xl font-bold text-[#FDF9EE] drop-shadow-md tracking-tighter">
+                  G<span className="font-script text-lg sm:text-xl text-[#E5CA8F] mx-0.5">&amp;</span>O
+                </span>
+
+                <span className="text-[8px] uppercase tracking-[0.25em] text-[#E5CA8F] mt-0.5 font-body font-semibold">
+                  Unveil
+                </span>
+              </button>
+
+              <span className="mt-3.5 text-[0.64rem] uppercase tracking-[0.28em] text-[#8E7427] font-body font-semibold animate-pulse">
+                Tap Seal to Open
+              </span>
             </div>
           </div>
         </div>
