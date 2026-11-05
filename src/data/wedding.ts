@@ -141,12 +141,14 @@ export const events = [
 ];
 
 export const dayTimeline = [
-  { time: "4:00 PM", label: "Guest Arrival", note: "Please be seated 15 minutes prior." },
-  { time: "4:30 PM", label: "Ceremony", note: "Exchange of vows and rings." },
-  { time: "5:30 PM", label: "Photography", note: "Family and couple portraits." },
-  { time: "7:00 PM", label: "Reception", note: "Cocktails and welcome toast." },
-  { time: "8:00 PM", label: "Dinner", note: "A curated multi-course menu." },
-  { time: "9:00 PM", label: "Celebration", note: "First dance and open floor." },
+  { time: "10:00 AM", label: "Guest Arrival", note: "Welcome guests and invite them to take their seats." },
+  { time: "10:30 AM", label: "Couple's Grand Entrance", note: "The bride and groom make their grand entrance." },
+  { time: "11:00 AM", label: "Traditional Blessings & Ring Exchange", note: "Exchange rings and receive blessings from parents and elders." },
+  { time: "11:45 AM", label: "Cake Cutting & Toast", note: "Celebrate your engagement with cake cutting and a toast." },
+  { time: "12:15 PM", label: "Photography Session", note: "Couple portraits, family photographs and group pictures." },
+  { time: "1:00 PM", label: "Lunch Reception", note: "Enjoy lunch with family and friends." },
+  { time: "2:00 PM", label: "Celebration & Entertainment", note: "Music, conversations and joyful moments." },
+  { time: "3:00 PM", label: "Event Conclusion", note: "Thank guests and conclude the celebration." },
 ];
 
 export const gallery = [
