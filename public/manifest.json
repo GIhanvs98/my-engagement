@@ -1,0 +1,12 @@
+{
+  "name": "Gihan & Onela's Wedding",
+  "short_name": "G & O Wedding",
+  "description": "Together with their families, they invite you to celebrate their special day.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fbf6ee",
+  "theme_color": "#6b1d2a",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}
