@@ -8,5 +8,15 @@
     "mealPreference": "Vegan / No Preference",
     "message": "TEST",
     "submittedAt": "2026-11-05T12:14:39.324Z"
+  },
+  {
+    "id": "rsvp_1793889589621_6now2",
+    "fullName": "Gihan Viraj",
+    "phone": "0705295574",
+    "attending": "accept",
+    "guests": 1,
+    "mealPreference": "Chicken",
+    "message": "test",
+    "submittedAt": "2026-11-05T14:39:49.621Z"
   }
 ]
