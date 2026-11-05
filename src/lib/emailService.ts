@@ -12,7 +12,7 @@ export async function sendRsvpNotificationEmail(record: RSVPRecord) {
     return { success: false, reason: "missing_api_key" };
   }
 
-  const toEmail = process.env.RSVP_NOTIFICATION_EMAIL || "gihanvs98@gmail.com";
+  const toEmail = process.env.RSVP_NOTIFICATION_EMAIL || "darkcreationsl98@gmail.com";
   const fromEmail = process.env.RESEND_FROM_EMAIL || "Engagement RSVP <onboarding@resend.dev>";
 
   const isAttending = record.attending === "accept";
