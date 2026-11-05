@@ -15,10 +15,8 @@ const labelClasses = "font-body text-[11px] tracking-[0.2em] uppercase text-ink-
 
 export default function RSVPForm() {
   const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [attending, setAttending] = useState<"accept" | "decline" | "">("");
-  const [guests, setGuests] = useState(1);
   const [mealPreference, setMealPreference] = useState(rsvpMealOptions[0]);
   const [message, setMessage] = useState("");
 
@@ -45,10 +43,9 @@ export default function RSVPForm() {
 
     const result = await submitRSVP({
       fullName: fullName.trim(),
-      email: email.trim() || undefined,
       phone: phone.trim() || undefined,
       attending,
-      guests: attending === "accept" ? guests : 0,
+      guests: attending === "accept" ? 1 : 0,
       mealPreference: attending === "accept" ? mealPreference : undefined,
       message: message.trim() || undefined,
     });
@@ -72,10 +69,8 @@ export default function RSVPForm() {
     setSubmitted(false);
     setAttending("");
     setFullName("");
-    setEmail("");
     setPhone("");
     setMessage("");
-    setGuests(1);
     setErrorMsg("");
   };
 
@@ -143,35 +138,19 @@ export default function RSVPForm() {
                   />
                 </div>
 
-                <div className="grid sm:grid-cols-2 gap-6">
-                  <div>
-                    <label className={labelClasses} htmlFor="email">
-                      Email Address
-                    </label>
-                    <input
-                      id="email"
-                      type="email"
-                      name="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className={inputClasses}
-                      placeholder="you@example.com"
-                    />
-                  </div>
-                  <div>
-                    <label className={labelClasses} htmlFor="phone">
-                      Phone Number
-                    </label>
-                    <input
-                      id="phone"
-                      type="tel"
-                      name="phone"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      className={inputClasses}
-                      placeholder="+94 77 123 4567"
-                    />
-                  </div>
+                <div>
+                  <label className={labelClasses} htmlFor="phone">
+                    Phone Number
+                  </label>
+                  <input
+                    id="phone"
+                    type="tel"
+                    name="phone"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    className={inputClasses}
+                    placeholder="+94 77 123 4567"
+                  />
                 </div>
 
                 <div>
@@ -238,52 +217,23 @@ export default function RSVPForm() {
                 </div>
 
                 {attending === "accept" && (
-                  <div className="grid sm:grid-cols-2 gap-6 animate-[fadeIn_0.4s_ease]">
-                    <div>
-                      <span className={labelClasses}>Number of Guests</span>
-                      <div className="mt-2.5 flex items-center gap-4">
-                        <button
-                          type="button"
-                          onClick={() => setGuests((g) => Math.max(1, g - 1))}
-                          className="h-10 w-10 rounded-full border border-champagne text-maroon hover:bg-maroon hover:text-ivory transition-colors flex items-center justify-center text-lg leading-none"
-                          aria-label="Fewer guests"
-                        >
-                          &minus;
-                        </button>
-                        <span
-                          className="font-display text-2xl text-maroon w-8 text-center tabular-nums"
-                          aria-live="polite"
-                        >
-                          {guests}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => setGuests((g) => Math.min(rsvpConfig.maxGuests, g + 1))}
-                          className="h-10 w-10 rounded-full border border-champagne text-maroon hover:bg-maroon hover:text-ivory transition-colors flex items-center justify-center text-lg leading-none"
-                          aria-label="More guests"
-                        >
-                          +
-                        </button>
-                      </div>
-                    </div>
-                    <div>
-                      <label className={labelClasses} htmlFor="meal">
-                        Meal Preference
-                      </label>
-                      <select
-                        id="meal"
-                        name="meal"
-                        value={mealPreference}
-                        onChange={(e) => setMealPreference(e.target.value)}
-                        className={cn(inputClasses, "appearance-none cursor-pointer mt-1")}
-                      >
-                        {rsvpMealOptions.map((m) => (
-                          <option key={m} value={m} className="bg-ivory text-ink">
-                            {m}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                  <div className="animate-[fadeIn_0.4s_ease]">
+                    <label className={labelClasses} htmlFor="meal">
+                      Meal Preference
+                    </label>
+                    <select
+                      id="meal"
+                      name="meal"
+                      value={mealPreference}
+                      onChange={(e) => setMealPreference(e.target.value)}
+                      className={cn(inputClasses, "appearance-none cursor-pointer mt-1")}
+                    >
+                      {rsvpMealOptions.map((m) => (
+                        <option key={m} value={m} className="bg-ivory text-ink">
+                          {m}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                 )}
 

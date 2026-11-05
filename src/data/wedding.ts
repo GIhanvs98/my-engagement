@@ -189,7 +189,7 @@ export const gallery = [
 
 export const venue = {
   name: "Rockhill Reception Hall & Caterers",
-  image: "/images/venue/rockhill-venue.jpg",
+  image: "/images/venue/rockhill-reception-hall.jpg",
   address: "No. 1/3, Sri Seelalankara Mawatha, Mullegama, Habarakada, Homagama, Sri Lanka",
   mapEmbedUrl:
     "https://www.google.com/maps?q=Rockhill+Reception+Hall+%26+Caterers+Homagama&output=embed",
