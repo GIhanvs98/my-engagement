@@ -11,17 +11,17 @@ export const couple = {
   groomRole: "Son of Mr. Ranjith & Mrs. Kusumalatha",
   groomBio:
     "The thoughtful soul with an adventurous spirit, deeply devoted to family, laughter, and building a blessed life together.",
-  brideFirstName: "Onela",
-  brideFullName: "Madhavee Onela Fernando",
+  brideFirstName: "A Madhavee",
+  brideFullName: "A Madhavee Fernando",
   bridePhoto:
     "/wedding/hero/bride.png",
-  brideRole: "Daughter of Mr. Calister & Mrs. Champa",
+  brideRole: "Daughter of Mr. Calistus & Mrs. Champa",
   brideBio:
     "The radiant warmth that brightens every room, full of grace, kindness, and an unwavering love that anchors them both.",
   couplePhoto: "/wedding/hero/couple.png",
   quote: "Two lives, two hearts, joined together in friendship, united forever in love.",
-  initials: { groom: "G", bride: "O" },
-  hashtag: "#GihanAndOnela2026",
+  initials: { groom: "G", bride: "M" },
+  hashtag: "#GihanAndMadhavee2026",
 };
 
 export const wedding = {
@@ -31,7 +31,7 @@ export const wedding = {
   welcomeMessage:
     "Together with their families, they invite you to celebrate their special day.",
   tagline: "Two hearts, one journey, forever begins here.",
-  siteUrl: "https://gihan-and-onela.wedding",
+  siteUrl: "https://gihan-and-madhavee.wedding",
   coverImage:
     "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1600&auto=format&fit=crop",
 };
@@ -68,7 +68,7 @@ export const intro: {
       id: "romance",
       image: "/images/couple/Joyful Couple with a Colorful Bouquet.png",
       tagline: "Two Hearts, One Journey",
-      title: "Gihan & Onela",
+      title: "Gihan & A Madhavee",
       caption: "Two souls finding laughter, warmth and endless home in each other.",
       accent: "In Love",
     },
@@ -144,7 +144,7 @@ export const events = [
     description: "The official registration ceremony blessed in the presence of our beloved family.",
     mapUrl: "https://www.google.com/maps/search/?api=1&query=Registration+Office+Angulana+Sri+Lanka",
     calendar: {
-      title: "Gihan & Onela's Registration Ceremony",
+      title: "Gihan & A Madhavee's Registration Ceremony",
       start: "20261120T080000",
       end: "20261120T083000",
       location: "Registration Office, Agulana, Sri Lanka",
@@ -161,7 +161,7 @@ export const events = [
     description: "Grand entrance, traditional blessings, ring exchange, lunch reception, and joyful celebration.",
     mapUrl: "https://share.google/sy6LpQQDbQoQCdhYx",
     calendar: {
-      title: "Gihan & Onela's Engagement Reception & Celebration",
+      title: "Gihan & A Madhavee's Engagement Reception & Celebration",
       start: "20261120T100000",
       end: "20261120T150000",
       location: "Rockhill Reception Hall, Homagama, Sri Lanka",
@@ -229,9 +229,9 @@ export const venue = {
 export const family = {
   bride: {
     heading: "Bride's Family",
-    parents: ["Mr. Calister", "Mrs. Champa"],
+    parents: ["Mr. Calistus", "Mrs. Champa"],
     note: "Daughter of",
-    short: "Mr. Calister & Mrs. Champa",
+    short: "Mr. Calistus & Mrs. Champa",
   },
   groom: {
     heading: "Groom's Family",
@@ -254,7 +254,7 @@ export const gift = {
   description:
     "Having you with us to celebrate is more than we could ask for. For those who wish to honour us further, a small blessing towards our new beginning would be received with gratitude.",
   bank: {
-    accountName: "Gihan Perera & Onela Fernando",
+    accountName: "Gihan Perera & A Madhavee Fernando",
     bankName: "Ceylon Trust Bank",
     accountNumber: "•••• •••• 4821",
     branch: "Kandy Branch",

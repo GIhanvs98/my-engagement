@@ -1,5 +1,6 @@
 import { Resend } from "resend";
 import type { RSVPRecord } from "@/app/api/rsvp/route";
+import { couple } from "@/data/wedding";
 
 const apiKey = process.env.RESEND_API_KEY;
 const resend = apiKey ? new Resend(apiKey) : null;
@@ -92,7 +93,7 @@ export async function sendRsvpNotificationEmail(record: RSVPRecord) {
       }
     </div>
     <div class="footer">
-      Gihan &amp; Onela &mdash; Engagement Invitation
+      ${couple.groomFirstName} &amp; ${couple.brideFirstName} &mdash; Engagement Invitation
     </div>
   </div>
 </body>

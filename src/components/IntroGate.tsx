@@ -336,7 +336,7 @@ export default function IntroGate({
             </button>
 
             <span className="hidden sm:inline text-champagne-light/70">
-              Gihan &amp; Onela &bull; Engagement 2026
+              {couple.groomFirstName} &amp; {couple.brideFirstName} &bull; Engagement 2026
             </span>
           </div>
         </div>
@@ -556,9 +556,11 @@ export default function IntroGate({
                 {/* Embossed Wax Seal Ring */}
                 <span className="absolute inset-2 rounded-full border border-dashed border-[#D4B26F]/60 pointer-events-none" />
 
-                {/* Monogram G & O */}
+                {/* Monogram */}
                 <span className="font-display italic text-2xl sm:text-3xl font-bold text-[#FDF9EE] drop-shadow-md tracking-tighter">
-                  G<span className="font-script text-lg sm:text-xl text-[#E5CA8F] mx-0.5">&amp;</span>O
+                  {couple.initials.groom}
+                  <span className="font-script text-lg sm:text-xl text-[#E5CA8F] mx-0.5">&amp;</span>
+                  {couple.initials.bride}
                 </span>
 
                 <span className="text-[8px] uppercase tracking-[0.25em] text-[#E5CA8F] mt-0.5 font-body font-semibold">
