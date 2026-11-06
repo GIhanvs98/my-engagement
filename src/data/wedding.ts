@@ -11,8 +11,8 @@ export const couple = {
   groomRole: "Son of Mr. Ranjith & Mrs. Kusumalatha",
   groomBio:
     "The thoughtful soul with an adventurous spirit, deeply devoted to family, laughter, and building a blessed life together.",
-  brideFirstName: "A Madhavee",
-  brideFullName: "A Madhavee Fernando",
+  brideFirstName: "Madhavee",
+  brideFullName: "Madhavee Fernando",
   bridePhoto:
     "/wedding/hero/bride.png",
   brideRole: "Daughter of Mr. Calistus & Mrs. Champa",
@@ -68,7 +68,7 @@ export const intro: {
       id: "romance",
       image: "/images/couple/Joyful Couple with a Colorful Bouquet.png",
       tagline: "Two Hearts, One Journey",
-      title: "Gihan & A Madhavee",
+      title: "Gihan & Madhavee",
       caption: "Two souls finding laughter, warmth and endless home in each other.",
       accent: "In Love",
     },
@@ -144,7 +144,7 @@ export const events = [
     description: "The official registration ceremony blessed in the presence of our beloved family.",
     mapUrl: "https://www.google.com/maps/search/?api=1&query=Registration+Office+Angulana+Sri+Lanka",
     calendar: {
-      title: "Gihan & A Madhavee's Registration Ceremony",
+      title: "Gihan & Madhavee's Registration Ceremony",
       start: "20261120T080000",
       end: "20261120T083000",
       location: "Registration Office, Agulana, Sri Lanka",
@@ -161,7 +161,7 @@ export const events = [
     description: "Grand entrance, traditional blessings, ring exchange, lunch reception, and joyful celebration.",
     mapUrl: "https://share.google/sy6LpQQDbQoQCdhYx",
     calendar: {
-      title: "Gihan & A Madhavee's Engagement Reception & Celebration",
+      title: "Gihan & Madhavee's Engagement Reception & Celebration",
       start: "20261120T100000",
       end: "20261120T150000",
       location: "Rockhill Reception Hall, Homagama, Sri Lanka",
@@ -254,7 +254,7 @@ export const gift = {
   description:
     "Having you with us to celebrate is more than we could ask for. For those who wish to honour us further, a small blessing towards our new beginning would be received with gratitude.",
   bank: {
-    accountName: "Gihan Perera & A Madhavee Fernando",
+    accountName: "Gihan Perera & Madhavee Fernando",
     bankName: "Ceylon Trust Bank",
     accountNumber: "•••• •••• 4821",
     branch: "Kandy Branch",
