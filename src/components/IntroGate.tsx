@@ -5,7 +5,6 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import { couple, wedding, intro, music } from "@/data/wedding";
 import Mandala from "./Mandala";
 import PetalBurst from "./PetalBurst";
-import PeraharaProcession from "./PeraharaProcession";
 import { weddingAudio } from "@/lib/weddingAudio";
 import { cn } from "@/lib/utils";
 
@@ -387,11 +386,6 @@ export default function IntroGate({
               ))}
             </div>
 
-            {/* Left Perahara Artwork */}
-            <div className="absolute bottom-0 left-0 w-[200%] pb-1 pointer-events-none opacity-85">
-              <PeraharaProcession className="w-full" />
-            </div>
-
             {/* Inner Gold Frame Border */}
             <div className="pointer-events-none absolute inset-3 sm:inset-4 border-l border-y border-[#B89A47]/35 rounded-l-2xl" />
           </div>
@@ -428,11 +422,6 @@ export default function IntroGate({
                   }
                 />
               ))}
-            </div>
-
-            {/* Right Perahara Artwork */}
-            <div className="absolute bottom-0 right-0 w-[200%] pb-1 pointer-events-none opacity-85">
-              <PeraharaProcession className="w-full" />
             </div>
 
             {/* Inner Gold Frame Border */}
